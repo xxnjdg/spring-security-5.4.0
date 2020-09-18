@@ -1,0 +1,8 @@
+
+= Appendix
+
+include::database-schema.adoc[]
+
+include::namespace.adoc[]
+
+include::faq.adoc[]
