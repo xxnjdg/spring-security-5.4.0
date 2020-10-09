@@ -96,6 +96,7 @@ public class LogoutFilter extends GenericFilterBean {
 			if (this.logger.isDebugEnabled()) {
 				this.logger.debug(LogMessage.format("Logging out [%s]", auth));
 			}
+			//调用了以下回调
 			this.handler.logout(request, response, auth);
 			this.logoutSuccessHandler.onLogoutSuccess(request, response, auth);
 			return;

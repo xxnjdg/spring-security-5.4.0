@@ -183,6 +183,7 @@ public abstract class AbstractSecurityInterceptor
 					+ " but AbstractSecurityInterceptor only configured to support secure objects of type: "
 					+ getSecureObjectClass());
 		}
+		//
 		Collection<ConfigAttribute> attributes = this.obtainSecurityMetadataSource().getAttributes(object);
 		if (CollectionUtils.isEmpty(attributes)) {
 			Assert.isTrue(!this.rejectPublicInvocations,

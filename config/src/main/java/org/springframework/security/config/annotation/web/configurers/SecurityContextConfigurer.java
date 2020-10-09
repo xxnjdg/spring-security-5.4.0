@@ -86,6 +86,7 @@ public final class SecurityContextConfigurer<H extends HttpSecurityBuilder<H>>
 		if (securityContextRepository == null) {
 			securityContextRepository = new HttpSessionSecurityContextRepository();
 		}
+		//创建 SecurityContextPersistenceFilter securityContextRepository 默认是 HttpSessionSecurityContextRepository
 		SecurityContextPersistenceFilter securityContextFilter = new SecurityContextPersistenceFilter(
 				securityContextRepository);
 		SessionManagementConfigurer<?> sessionManagement = http.getConfigurer(SessionManagementConfigurer.class);
@@ -95,6 +96,7 @@ public final class SecurityContextConfigurer<H extends HttpSecurityBuilder<H>>
 			securityContextFilter.setForceEagerSessionCreation(true);
 		}
 		securityContextFilter = postProcess(securityContextFilter);
+		//加入 filter
 		http.addFilter(securityContextFilter);
 	}
 

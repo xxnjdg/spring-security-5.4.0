@@ -112,6 +112,10 @@ public final class LogoutConfigurer<H extends HttpSecurityBuilder<H>>
 	 * {@link Authentication} at the time of logout.
 	 * @param clearAuthentication true {@link SecurityContextLogoutHandler} should clear
 	 * the {@link Authentication} (default), or false otherwise.
+	 *
+	 * 指定{@link SecurityContextLogoutHandler}是否应在注销时清除{@link Authentication}。
+	 * @param clearAuthentication true {@link SecurityContextLogoutHandler}应该清除{@link Authentication}（默认），否则为false。
+	 *
 	 * @return the {@link LogoutConfigurer} for further customization
 	 */
 	public LogoutConfigurer<H> clearAuthentication(boolean clearAuthentication) {
@@ -124,6 +128,9 @@ public final class LogoutConfigurer<H extends HttpSecurityBuilder<H>>
 	 * {@link HttpSession} at the time of logout.
 	 * @param invalidateHttpSession true if the {@link HttpSession} should be invalidated
 	 * (default), or false otherwise.
+	 *
+	 * 将{@link SecurityContextLogoutHandler}配置为在注销时使{@link HttpSession}无效。
+	 * @param invalidateHttpSession 如果{@link HttpSession}应该无效（默认），则为true；否则为false。
 	 * @return the {@link LogoutConfigurer} for further customization
 	 */
 	public LogoutConfigurer<H> invalidateHttpSession(boolean invalidateHttpSession) {
@@ -278,6 +285,7 @@ public final class LogoutConfigurer<H extends HttpSecurityBuilder<H>>
 		}
 		DefaultLoginPageGeneratingFilter loginPageGeneratingFilter = http
 				.getSharedObject(DefaultLoginPageGeneratingFilter.class);
+		//默认
 		if (loginPageGeneratingFilter != null && !isCustomLogoutSuccess()) {
 			loginPageGeneratingFilter.setLogoutSuccessUrl(getLogoutSuccessUrl());
 		}

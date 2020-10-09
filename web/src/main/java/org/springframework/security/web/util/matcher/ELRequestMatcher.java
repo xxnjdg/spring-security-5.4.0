@@ -27,6 +27,8 @@ import org.springframework.security.web.authentication.DelegatingAuthenticationE
 /**
  * A RequestMatcher implementation which uses a SpEL expression
  *
+ * 使用SpEL表达式的RequestMatcher实现
+ *
  * <p>
  * With the default EvaluationContext ({@link ELRequestMatcherContext}) you can use
  * <code>hasIpAdress()</code> and <code>hasHeader()</code>

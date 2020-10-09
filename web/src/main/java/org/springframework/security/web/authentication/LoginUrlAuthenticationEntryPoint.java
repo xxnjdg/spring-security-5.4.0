@@ -72,6 +72,7 @@ public class LoginUrlAuthenticationEntryPoint implements AuthenticationEntryPoin
 
 	private PortResolver portResolver = new PortResolverImpl();
 
+	//登录 url
 	private String loginFormUrl;
 
 	private boolean forceHttps = false;

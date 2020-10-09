@@ -43,6 +43,7 @@ public final class CookieClearingLogoutHandler implements LogoutHandler {
 		Assert.notNull(cookiesToClear, "List of cookies cannot be null");
 		List<Function<HttpServletRequest, Cookie>> cookieList = new ArrayList<>();
 		for (String cookieName : cookiesToClear) {
+			//清除指定名字 Cookie
 			cookieList.add((request) -> {
 				Cookie cookie = new Cookie(cookieName, null);
 				String cookiePath = request.getContextPath() + "/";

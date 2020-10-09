@@ -19,6 +19,7 @@ package org.springframework.security.samples.web;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * @author Joe Grandja
@@ -51,5 +52,17 @@ public class MainController {
 		model.addAttribute("loginError", true);
 		return "login";
 	}
+
+//	@RequestMapping("/test")
+//	@ResponseBody
+//	public String test() {
+//		return "test";
+//	}
+//
+//	@RequestMapping("/")
+//	@ResponseBody
+//	public String root() {
+//		return "test";
+//	}
 
 }

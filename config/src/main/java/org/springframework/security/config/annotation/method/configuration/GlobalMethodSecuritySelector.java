@@ -56,10 +56,12 @@ final class GlobalMethodSecuritySelector implements ImportSelector {
 				: GlobalMethodSecurityAspectJAutoProxyRegistrar.class.getName();
 		boolean jsr250Enabled = attributes.getBoolean("jsr250Enabled");
 		List<String> classNames = new ArrayList<>(4);
+		//默认情况下 MethodSecurityMetadataSourceAdvisorRegistrar AutoProxyRegistrar
 		if (isProxy) {
 			classNames.add(MethodSecurityMetadataSourceAdvisorRegistrar.class.getName());
 		}
 		classNames.add(autoProxyClassName);
+		//如果声明 @EnableGlobalMethodSecurity 的配置类继承 GlobalMethodSecurityConfiguration 就不用导入，否则帮我们自动导入
 		if (!skipMethodSecurityConfiguration) {
 			classNames.add(GlobalMethodSecurityConfiguration.class.getName());
 		}

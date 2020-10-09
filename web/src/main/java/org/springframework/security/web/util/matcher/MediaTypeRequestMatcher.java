@@ -38,6 +38,8 @@ import org.springframework.web.context.request.ServletWebRequest;
  * Allows matching {@link HttpServletRequest} based upon the {@link MediaType}'s resolved
  * from a {@link ContentNegotiationStrategy}.
  *
+ * 允许根据{@link ContentNegotiationStrategy}解析的{@link MediaType}匹配{@link HttpServletRequest}。
+ *
  * By default, the matching process will perform the following:
  *
  * <ul>

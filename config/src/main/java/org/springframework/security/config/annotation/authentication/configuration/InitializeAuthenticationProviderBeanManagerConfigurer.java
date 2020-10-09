@@ -44,6 +44,7 @@ class InitializeAuthenticationProviderBeanManagerConfigurer extends GlobalAuthen
 
 	@Override
 	public void init(AuthenticationManagerBuilder auth) throws Exception {
+		//把 new InitializeAuthenticationProviderManagerConfigurer() 加入到 auth
 		auth.apply(new InitializeAuthenticationProviderManagerConfigurer());
 	}
 
@@ -54,10 +55,12 @@ class InitializeAuthenticationProviderBeanManagerConfigurer extends GlobalAuthen
 			if (auth.isConfigured()) {
 				return;
 			}
+			//找 AuthenticationProvider bean
 			AuthenticationProvider authenticationProvider = getBeanOrNull(AuthenticationProvider.class);
 			if (authenticationProvider == null) {
 				return;
 			}
+			//加入到 auth
 			auth.authenticationProvider(authenticationProvider);
 		}
 

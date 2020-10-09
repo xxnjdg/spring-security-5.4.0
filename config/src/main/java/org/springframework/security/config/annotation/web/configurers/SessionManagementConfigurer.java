@@ -62,6 +62,7 @@ import org.springframework.util.CollectionUtils;
 
 /**
  * Allows configuring session management.
+ * 允许配置会话管理。
  *
  * <h2>Security Filters</h2>
  *
@@ -101,10 +102,12 @@ import org.springframework.util.CollectionUtils;
 public final class SessionManagementConfigurer<H extends HttpSecurityBuilder<H>>
 		extends AbstractHttpConfigurer<SessionManagementConfigurer<H>, H> {
 
+	//new ChangeSessionIdAuthenticationStrategy();
 	private final SessionAuthenticationStrategy DEFAULT_SESSION_FIXATION_STRATEGY = createDefaultSessionFixationProtectionStrategy();
 
 	private SessionAuthenticationStrategy sessionFixationAuthenticationStrategy = this.DEFAULT_SESSION_FIXATION_STRATEGY;
 
+	//默认 new CompositeSessionAuthenticationStrategy(this.sessionAuthenticationStrategies)
 	private SessionAuthenticationStrategy sessionAuthenticationStrategy;
 
 	private SessionAuthenticationStrategy providedSessionAuthenticationStrategy;
@@ -113,6 +116,7 @@ public final class SessionManagementConfigurer<H extends HttpSecurityBuilder<H>>
 
 	private SessionInformationExpiredStrategy expiredSessionStrategy;
 
+	//默认加入 this.sessionFixationAuthenticationStrategy
 	private List<SessionAuthenticationStrategy> sessionAuthenticationStrategies = new ArrayList<>();
 
 	private SessionRegistry sessionRegistry;
@@ -318,6 +322,7 @@ public final class SessionManagementConfigurer<H extends HttpSecurityBuilder<H>>
 		boolean stateless = isStateless();
 		if (securityContextRepository == null) {
 			if (stateless) {
+				//无状态
 				http.setSharedObject(SecurityContextRepository.class, new NullSecurityContextRepository());
 			}
 			else {
@@ -452,6 +457,7 @@ public final class SessionManagementConfigurer<H extends HttpSecurityBuilder<H>>
 
 	/**
 	 * Returns true if the {@link SessionCreationPolicy} is stateless
+	 * 如果是无状态返回 true
 	 * @return
 	 */
 	private boolean isStateless() {
@@ -463,6 +469,9 @@ public final class SessionManagementConfigurer<H extends HttpSecurityBuilder<H>>
 	 * Gets the customized {@link SessionAuthenticationStrategy} if
 	 * {@link #sessionAuthenticationStrategy(SessionAuthenticationStrategy)} was
 	 * specified. Otherwise creates a default {@link SessionAuthenticationStrategy}.
+	 *
+	 * 如果指定了{@link #sessionAuthenticationStrategy（SessionAuthenticationStrategy）}，
+	 * 则获取自定义的{@link SessionAuthenticationStrategy}。 否则，创建默认的{@link SessionAuthenticationStrategy}。
 	 * @return the {@link SessionAuthenticationStrategy} to use
 	 */
 	private SessionAuthenticationStrategy getSessionAuthenticationStrategy(H http) {

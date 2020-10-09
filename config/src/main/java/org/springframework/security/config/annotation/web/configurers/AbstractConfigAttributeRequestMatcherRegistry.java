@@ -39,6 +39,7 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractConfigAttributeRequestMatcherRegistry<C> extends AbstractRequestMatcherRegistry<C> {
 
+	//UrlMapping 集合，以注册了的 RequestMatcher 和 Collection<ConfigAttribute> 集合
 	private List<UrlMapping> urlMappings = new ArrayList<>();
 
 	private List<RequestMatcher> unmappedMatchers;
@@ -101,6 +102,8 @@ public abstract class AbstractConfigAttributeRequestMatcherRegistry<C> extends A
 	 * {@link ConfigAttribute} instances
 	 * @return the mapping of {@link RequestMatcher} to {@link Collection} of
 	 * {@link ConfigAttribute} instances. Cannot be null.
+	 *
+	 * List<UrlMapping> 转换为 LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>>
 	 */
 	final LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> createRequestMap() {
 		Assert.state(this.unmappedMatchers == null, () -> "An incomplete mapping was found for " + this.unmappedMatchers
@@ -117,6 +120,8 @@ public abstract class AbstractConfigAttributeRequestMatcherRegistry<C> extends A
 	/**
 	 * A mapping of {@link RequestMatcher} to {@link Collection} of
 	 * {@link ConfigAttribute} instances
+	 *
+	 * {@link RequestMatcher} 和 {@link ConfigAttribute} 集合 的映射
 	 */
 	static final class UrlMapping {
 

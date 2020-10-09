@@ -91,14 +91,17 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 
 	private static final Log logger = LogFactory.getLog(ProviderManager.class);
 
+	//事件发送器
 	private AuthenticationEventPublisher eventPublisher = new NullEventPublisher();
 
 	private List<AuthenticationProvider> providers = Collections.emptyList();
 
 	protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
+	//父母
 	private AuthenticationManager parent;
 
+	//是否在认真后擦除 Credentials
 	private boolean eraseCredentialsAfterAuthentication = true;
 
 	/**
@@ -163,6 +166,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 	 */
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+		//#1.获取当前的Authentication的认证类型
 		Class<? extends Authentication> toTest = authentication.getClass();
 		AuthenticationException lastException = null;
 		AuthenticationException parentException = null;
@@ -170,6 +174,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 		Authentication parentResult = null;
 		int currentPosition = 0;
 		int size = this.providers.size();
+		//#2.遍历所有的providers使用supports方法判断该provider是否支持当前的认证类型，不支持的话继续遍历
 		for (AuthenticationProvider provider : getProviders()) {
 			if (!provider.supports(toTest)) {
 				continue;
@@ -179,8 +184,10 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 						provider.getClass().getSimpleName(), ++currentPosition, size));
 			}
 			try {
+				//3.支持的话调用provider的authenticat方法认证
 				result = provider.authenticate(authentication);
 				if (result != null) {
+					//#4.认证通过的话重新生成Authentication对应的Token
 					copyDetails(authentication, result);
 					break;
 				}
@@ -198,6 +205,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 		if (result == null && this.parent != null) {
 			// Allow the parent to try.
 			try {
+				//#5.如果#1 没有验证通过，则使用父类型AuthenticationManager进行验证
 				parentResult = this.parent.authenticate(authentication);
 				result = parentResult;
 			}
@@ -213,6 +221,7 @@ public class ProviderManager implements AuthenticationManager, MessageSourceAwar
 			}
 		}
 		if (result != null) {
+			//#6. 是否擦出敏感信息
 			if (this.eraseCredentialsAfterAuthentication && (result instanceof CredentialsContainer)) {
 				// Authentication is complete. Remove credentials and other secret data
 				// from authentication

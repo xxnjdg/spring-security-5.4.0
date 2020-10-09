@@ -24,6 +24,8 @@ import org.springframework.util.Assert;
  * A {@link RequestMatcher} that can be used to match request that contain a header with
  * an expected header name and an expected value.
  *
+ * {@link RequestMatcher}，可用于匹配包含标头的标头，标头具有期望的标头名称和期望的值。
+ *
  * <p>
  * For example, the following will match an request that contains a header with the name
  * X-Requested-With no matter what the value is.

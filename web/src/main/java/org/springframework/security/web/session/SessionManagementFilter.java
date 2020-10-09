@@ -45,6 +45,8 @@ import org.springframework.web.filter.GenericFilterBean;
  * session-related activity such as activating session-fixation protection mechanisms or
  * checking for multiple concurrent logins.
  *
+ * 检测自请求开始以来用户已通过身份验证，如果有，则调用已配置的{@link SessionAuthenticationStrategy}以执行任何与会话相关的活动，例如激活会话固定保护机制或检查多个并发登录。
+ *
  * @author Martin Algesten
  * @author Luke Taylor
  * @since 2.0
@@ -53,8 +55,10 @@ public class SessionManagementFilter extends GenericFilterBean {
 
 	static final String FILTER_APPLIED = "__spring_security_session_mgmt_filter_applied";
 
+	//new HttpSessionSecurityContextRepository();
 	private final SecurityContextRepository securityContextRepository;
 
+	//new CompositeSessionAuthenticationStrategy(Arrary.asList(new ChangeSessionIdAuthenticationStrategy()))
 	private SessionAuthenticationStrategy sessionAuthenticationStrategy;
 
 	private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
@@ -93,6 +97,7 @@ public class SessionManagementFilter extends GenericFilterBean {
 			if (authentication != null && !this.trustResolver.isAnonymous(authentication)) {
 				// The user has been authenticated during the current request, so call the
 				// session strategy
+				// 用户在当前请求期间已通过身份验证，因此请调用会话策略
 				try {
 					this.sessionAuthenticationStrategy.onAuthentication(authentication, request, response);
 				}
@@ -106,6 +111,7 @@ public class SessionManagementFilter extends GenericFilterBean {
 				// Eagerly save the security context to make it available for any possible
 				// re-entrant requests which may occur before the current request
 				// completes. SEC-1396.
+				// 认真保存安全上下文，以使其可用于当前请求完成之前可能发生的任何可能的重入请求。 SEC-1396。
 				this.securityContextRepository.saveContext(SecurityContextHolder.getContext(), request, response);
 			}
 			else {

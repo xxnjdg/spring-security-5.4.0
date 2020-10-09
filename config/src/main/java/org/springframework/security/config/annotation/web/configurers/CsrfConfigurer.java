@@ -201,17 +201,21 @@ public final class CsrfConfigurer<H extends HttpSecurityBuilder<H>>
 	@SuppressWarnings("unchecked")
 	@Override
 	public void configure(H http) {
+		//创建过滤器
 		CsrfFilter filter = new CsrfFilter(this.csrfTokenRepository);
 		RequestMatcher requireCsrfProtectionMatcher = getRequireCsrfProtectionMatcher();
+		//设置忽略检验规则，默认忽略 "GET", "HEAD", "TRACE", "OPTIONS"
 		if (requireCsrfProtectionMatcher != null) {
 			filter.setRequireCsrfProtectionMatcher(requireCsrfProtectionMatcher);
 		}
 		AccessDeniedHandler accessDeniedHandler = createAccessDeniedHandler(http);
+		//设置检验不通过错误处理
 		if (accessDeniedHandler != null) {
 			filter.setAccessDeniedHandler(accessDeniedHandler);
 		}
 		LogoutConfigurer<H> logoutConfigurer = http.getConfigurer(LogoutConfigurer.class);
 		if (logoutConfigurer != null) {
+			//登出会清除 session 保存的token
 			logoutConfigurer.addLogoutHandler(new CsrfLogoutHandler(this.csrfTokenRepository));
 		}
 		SessionManagementConfigurer<H> sessionConfigurer = http.getConfigurer(SessionManagementConfigurer.class);
@@ -247,6 +251,7 @@ public final class CsrfConfigurer<H extends HttpSecurityBuilder<H>>
 		ExceptionHandlingConfigurer<H> exceptionConfig = http.getConfigurer(ExceptionHandlingConfigurer.class);
 		AccessDeniedHandler handler = null;
 		if (exceptionConfig != null) {
+			// TODO: 2020/9/30 xxnjdg 不知道什么值
 			handler = exceptionConfig.getAccessDeniedHandler();
 		}
 		if (handler == null) {
@@ -268,6 +273,7 @@ public final class CsrfConfigurer<H extends HttpSecurityBuilder<H>>
 		if (sessionManagement == null) {
 			return null;
 		}
+		// TODO: 2020/9/30 xxnjdg 不知道什么值
 		return sessionManagement.getInvalidSessionStrategy();
 	}
 

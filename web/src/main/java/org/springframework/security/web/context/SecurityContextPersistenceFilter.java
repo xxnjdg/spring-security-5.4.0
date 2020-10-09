@@ -62,6 +62,8 @@ public class SecurityContextPersistenceFilter extends GenericFilterBean {
 
 	static final String FILTER_APPLIED = "__spring_security_scpf_applied";
 
+	//安全上下文存储的仓库
+	//new HttpSessionSecurityContextRepository()
 	private SecurityContextRepository repo;
 
 	private boolean forceEagerSessionCreation = false;
@@ -94,9 +96,13 @@ public class SecurityContextPersistenceFilter extends GenericFilterBean {
 				this.logger.debug(LogMessage.format("Created session %s eagerly", session.getId()));
 			}
 		}
+		//包装request，response
 		HttpRequestResponseHolder holder = new HttpRequestResponseHolder(request, response);
+		//从Session中获取安全上下文信息
 		SecurityContext contextBeforeChainExecution = this.repo.loadContext(holder);
 		try {
+			//请求开始时，设置安全上下文信息，这样就避免了用户直接从Session中获取安全上下文信息
+			//默认存在 ThreadLocal
 			SecurityContextHolder.setContext(contextBeforeChainExecution);
 			if (contextBeforeChainExecution.getAuthentication() == null) {
 				logger.debug("Set SecurityContextHolder to empty SecurityContext");
@@ -110,6 +116,7 @@ public class SecurityContextPersistenceFilter extends GenericFilterBean {
 			chain.doFilter(holder.getRequest(), holder.getResponse());
 		}
 		finally {
+			//请求结束后，清空安全上下文信息
 			SecurityContext contextAfterChainExecution = SecurityContextHolder.getContext();
 			// Crucial removal of SecurityContextHolder contents before anything else.
 			SecurityContextHolder.clearContext();

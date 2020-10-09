@@ -43,6 +43,8 @@ public interface UserDetailsService {
 	 * @return a fully populated user record (never <code>null</code>)
 	 * @throws UsernameNotFoundException if the user could not be found or the user has no
 	 * GrantedAuthority
+	 *
+	 * 通过用户名 username 调用方法 loadUserByUsername 返回了一个UserDetails接口对象
 	 */
 	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 

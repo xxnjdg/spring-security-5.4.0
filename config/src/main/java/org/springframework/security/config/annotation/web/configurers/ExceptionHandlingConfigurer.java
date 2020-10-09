@@ -37,6 +37,9 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * than applying this
  * {@link org.springframework.security.config.annotation.SecurityConfigurer}.
  *
+ * 将与Spring Security相关的异常的异常处理添加到应用程序。 所有属性都有合理的默认值，
+ * 因此除了应用此{@link org.springframework.security.config.annotation.SecurityConfigurer}外，不需要其他配置。
+ *
  * <h2>Security Filters</h2>
  *
  * The following Filters are populated

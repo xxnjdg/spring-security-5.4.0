@@ -111,16 +111,20 @@ import org.springframework.web.filter.GenericFilterBean;
 public abstract class AbstractAuthenticationProcessingFilter extends GenericFilterBean
 		implements ApplicationEventPublisherAware, MessageSourceAware {
 
+	//发送事件
 	protected ApplicationEventPublisher eventPublisher;
 
 	protected AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource = new WebAuthenticationDetailsSource();
 
+	//包含了一个身份认证器
 	private AuthenticationManager authenticationManager;
 
 	protected MessageSourceAccessor messages = SpringSecurityMessageSource.getAccessor();
 
+	//用于实现remeberMe
 	private RememberMeServices rememberMeServices = new NullRememberMeServices();
 
+	//请求 RequestMatcher 里面封装了 请求url 默认使用 post方法 请求 /login路径
 	private RequestMatcher requiresAuthenticationRequestMatcher;
 
 	private boolean continueChainBeforeSuccessfulAuthentication = false;
@@ -129,6 +133,7 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 
 	private boolean allowSessionCreation = true;
 
+	//这两个Handler很关键，分别代表了认证成功和失败相应的处理器
 	private AuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
 
 	private AuthenticationFailureHandler failureHandler = new SimpleUrlAuthenticationFailureHandler();
@@ -189,6 +194,9 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 	 * request, the {@link #attemptAuthentication(HttpServletRequest, HttpServletResponse)
 	 * attemptAuthentication} will be invoked to perform the authentication. There are
 	 * then three possible outcomes:
+	 *
+	 * 调用{@link #requiresAuthentication（HttpServletRequest，HttpServletResponse）requireAuthentication}方法，以确定请求是否用于身份验证，是否应由此过滤器处理。
+	 * 如果是身份验证请求，则将调用{@link #attemptAuthentication（HttpServletRequest，HttpServletResponse）tryAuthentication}来执行身份验证。 然后有三种可能的结果：
 	 * <ol>
 	 * <li>An <tt>Authentication</tt> object is returned. The configured
 	 * {@link SessionAuthenticationStrategy} will be invoked (to handle any
@@ -196,14 +204,25 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 	 * session-fixation attacks) followed by the invocation of
 	 * {@link #successfulAuthentication(HttpServletRequest, HttpServletResponse, FilterChain, Authentication)}
 	 * method</li>
+	 *
+	 * <li>返回一个<tt> Authentication </ tt>对象。 将调用配置的{@link SessionAuthenticationStrategy}（以处理任何与会话相关的行为，例如创建新会话以防止会话固定攻击），
+	 * 然后调用{@link #successfulAuthentication（HttpServletRequest，HttpServletResponse，FilterChain，Authentication ）}方法</ li>
+	 *
 	 * <li>An <tt>AuthenticationException</tt> occurs during authentication. The
 	 * {@link #unsuccessfulAuthentication(HttpServletRequest, HttpServletResponse, AuthenticationException)
 	 * unsuccessfulAuthentication} method will be invoked</li>
+	 *
+	 * <li>身份验证期间发生<tt> AuthenticationException </ tt>。
+	 * {@link #unsuccessfulAuthentication（HttpServletRequest，HttpServletResponse，AuthenticationException）unsuccessfulAuthentication}方法将被调用</ li>
+	 *
 	 * <li>Null is returned, indicating that the authentication process is incomplete. The
 	 * method will then return immediately, assuming that the subclass has done any
 	 * necessary work (such as redirects) to continue the authentication process. The
 	 * assumption is that a later request will be received by this method where the
 	 * returned <tt>Authentication</tt> object is not null.
+	 *
+	 * <li>返回Null，表示身份验证过程未完成。 然后，该方法将立即返回，假定子类已完成任何必要的工作（例如重定向）以继续进行身份验证过程。
+	 * 假定此方法将接收到更高版本的请求，其中返回的<tt> Authentication </ tt>对象不为null。
 	 * </ol>
 	 */
 	@Override
@@ -229,14 +248,18 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 			if (this.continueChainBeforeSuccessfulAuthentication) {
 				chain.doFilter(request, response);
 			}
+			//注意，认证成功后过滤器把authResult结果也传递给了成功处理器
 			successfulAuthentication(request, response, chain, authenticationResult);
 		}
+		//在认证过程中可以直接抛出异常，在过滤器中，就像此处一样，进行捕获
 		catch (InternalAuthenticationServiceException failed) {
+			//内部服务异常
 			this.logger.error("An internal error occurred while trying to authenticate the user.", failed);
 			unsuccessfulAuthentication(request, response, failed);
 		}
 		catch (AuthenticationException ex) {
 			// Authentication failed
+			//认证失败
 			unsuccessfulAuthentication(request, response, ex);
 		}
 	}

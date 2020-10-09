@@ -47,6 +47,8 @@ import org.springframework.util.Assert;
  * <p>
  * Adds the Security HTTP headers to the response. Security HTTP headers is activated by
  * default when using {@link WebSecurityConfigurerAdapter}'s default constructor.
+ *
+ * 将安全性HTTP标头添加到响应中。 使用{@link WebSecurityConfigurerAdapter}的默认构造函数时，默认情况下会激活安全HTTP标头。
  * </p>
  *
  * <p>

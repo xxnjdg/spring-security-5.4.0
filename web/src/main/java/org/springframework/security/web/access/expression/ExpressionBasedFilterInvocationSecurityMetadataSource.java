@@ -57,6 +57,8 @@ public final class ExpressionBasedFilterInvocationSecurityMetadataSource
 		Assert.notNull(expressionHandler, "A non-null SecurityExpressionHandler is required");
 	}
 
+	//Collection<ConfigAttribute> 原本是 SecurityConfig 处理成
+	//WebExpressionConfigAttribute 类型
 	private static LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> processMap(
 			LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap, ExpressionParser parser) {
 		Assert.notNull(parser, "SecurityExpressionHandler returned a null parser object");
@@ -67,6 +69,7 @@ public final class ExpressionBasedFilterInvocationSecurityMetadataSource
 
 	private static void process(ExpressionParser parser, RequestMatcher request, Collection<ConfigAttribute> value,
 			BiConsumer<RequestMatcher, Collection<ConfigAttribute>> consumer) {
+		//获取权限字符串
 		String expression = getExpression(request, value);
 		if (logger.isDebugEnabled()) {
 			logger.debug(LogMessage.format("Adding web access control expression [%s] for %s", expression, request));

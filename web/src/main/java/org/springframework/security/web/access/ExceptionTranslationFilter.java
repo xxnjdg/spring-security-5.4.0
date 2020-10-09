@@ -123,14 +123,19 @@ public class ExceptionTranslationFilter extends GenericFilterBean {
 		}
 		catch (Exception ex) {
 			// Try to extract a SpringSecurityException from the stacktrace
+			// 尝试从堆栈跟踪中提取Spring Security Exception
 			Throwable[] causeChain = this.throwableAnalyzer.determineCauseChain(ex);
+			//查看异常是否是 AuthenticationException
 			RuntimeException securityException = (AuthenticationException) this.throwableAnalyzer
 					.getFirstThrowableOfType(AuthenticationException.class, causeChain);
 			if (securityException == null) {
+				//查看异常是否是 AccessDeniedException
 				securityException = (AccessDeniedException) this.throwableAnalyzer
 						.getFirstThrowableOfType(AccessDeniedException.class, causeChain);
 			}
 			if (securityException == null) {
+				//如果都不是 AccessDeniedException AuthenticationException异常
+				//向上抛，这里是 ServletException 和  RuntimeException
 				rethrow(ex);
 			}
 			if (response.isCommitted()) {
@@ -164,6 +169,7 @@ public class ExceptionTranslationFilter extends GenericFilterBean {
 
 	private void handleSpringSecurityException(HttpServletRequest request, HttpServletResponse response,
 			FilterChain chain, RuntimeException exception) throws IOException, ServletException {
+		//分开处理
 		if (exception instanceof AuthenticationException) {
 			handleAuthenticationException(request, response, chain, (AuthenticationException) exception);
 		}
@@ -182,6 +188,7 @@ public class ExceptionTranslationFilter extends GenericFilterBean {
 			FilterChain chain, AccessDeniedException exception) throws ServletException, IOException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		boolean isAnonymous = this.authenticationTrustResolver.isAnonymous(authentication);
+		//如果是匿名和记住我
 		if (isAnonymous || this.authenticationTrustResolver.isRememberMe(authentication)) {
 			if (logger.isTraceEnabled()) {
 				logger.trace(LogMessage.format("Sending %s to authentication entry point since access is denied",
@@ -198,6 +205,7 @@ public class ExceptionTranslationFilter extends GenericFilterBean {
 						LogMessage.format("Sending %s to access denied handler since access is denied", authentication),
 						exception);
 			}
+			//认证过了没有相应权限
 			this.accessDeniedHandler.handle(request, response, exception);
 		}
 	}

@@ -69,10 +69,13 @@ import org.springframework.util.Assert;
 @Configuration(proxyBeanMethods = false)
 public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAware {
 
+	//new WebSecurity(objectPostProcessor)
 	private WebSecurity webSecurity;
 
 	private Boolean debugEnabled;
 
+	//SecurityConfigurer 配置，一般存我们自己定义的 WebSecurityConfigurerAdapter 实现类。
+	// 或者springboot自动配置的 DefaultConfigurerAdapter
 	private List<SecurityConfigurer<Filter, WebSecurity>> webSecurityConfigurers;
 
 	private List<SecurityFilterChain> securityFilterChains = Collections.emptyList();
@@ -106,10 +109,14 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 		boolean hasFilterChain = !this.securityFilterChains.isEmpty();
 		Assert.state(!(hasConfigurers && hasFilterChain),
 				"Found WebSecurityConfigurerAdapter as well as SecurityFilterChain. Please select just one.");
+		//如果没有配置 没有过滤器
+		//默认 hasConfigurers = true
 		if (!hasConfigurers && !hasFilterChain) {
+			//创建
 			WebSecurityConfigurerAdapter adapter = this.objectObjectPostProcessor
 					.postProcess(new WebSecurityConfigurerAdapter() {
 					});
+			//加入 webSecurity
 			this.webSecurity.apply(adapter);
 		}
 		for (SecurityFilterChain securityFilterChain : this.securityFilterChains) {
@@ -124,6 +131,7 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 		for (WebSecurityCustomizer customizer : this.webSecurityCustomizers) {
 			customizer.customize(this.webSecurity);
 		}
+		//创建 Filter
 		return this.webSecurity.build();
 	}
 
@@ -151,7 +159,9 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 	@Autowired(required = false)
 	public void setFilterChainProxySecurityConfigurer(ObjectPostProcessor<Object> objectPostProcessor,
 			@Value("#{@autowiredWebSecurityConfigurersIgnoreParents.getWebSecurityConfigurers()}") List<SecurityConfigurer<Filter, WebSecurity>> webSecurityConfigurers)
+			//注意这里调用 autowiredWebSecurityConfigurersIgnoreParents.getWebSecurityConfigurers() 获取 webSecurityConfigurers
 			throws Exception {
+		//创建 new WebSecurity
 		this.webSecurity = objectPostProcessor.postProcess(new WebSecurity(objectPostProcessor));
 		if (this.debugEnabled != null) {
 			this.webSecurity.debug(this.debugEnabled);
@@ -159,8 +169,10 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 		webSecurityConfigurers.sort(AnnotationAwareOrderComparator.INSTANCE);
 		Integer previousOrder = null;
 		Object previousConfig = null;
+		//遍历
 		for (SecurityConfigurer<Filter, WebSecurity> config : webSecurityConfigurers) {
 			Integer order = AnnotationAwareOrderComparator.lookupOrder(config);
+			//WebSecurityConfigurers 声明的 @Order 值必须唯一
 			if (previousOrder != null && previousOrder.equals(order)) {
 				throw new IllegalStateException("@Order on WebSecurityConfigurers must be unique. Order of " + order
 						+ " was already used on " + previousConfig + ", so it cannot be used on " + config + " too.");
@@ -169,6 +181,7 @@ public class WebSecurityConfiguration implements ImportAware, BeanClassLoaderAwa
 			previousConfig = config;
 		}
 		for (SecurityConfigurer<Filter, WebSecurity> webSecurityConfigurer : webSecurityConfigurers) {
+			//webSecurityConfigurer 加入到webSecurity
 			this.webSecurity.apply(webSecurityConfigurer);
 		}
 		this.webSecurityConfigurers = webSecurityConfigurers;

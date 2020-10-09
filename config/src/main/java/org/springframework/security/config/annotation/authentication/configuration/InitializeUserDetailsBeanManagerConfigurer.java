@@ -49,6 +49,7 @@ class InitializeUserDetailsBeanManagerConfigurer extends GlobalAuthenticationCon
 
 	@Override
 	public void init(AuthenticationManagerBuilder auth) throws Exception {
+		//new InitializeUserDetailsManagerConfigurer() 加入 auth
 		auth.apply(new InitializeUserDetailsManagerConfigurer());
 	}
 
@@ -74,6 +75,7 @@ class InitializeUserDetailsBeanManagerConfigurer extends GlobalAuthenticationCon
 				provider.setUserDetailsPasswordService(passwordManager);
 			}
 			provider.afterPropertiesSet();
+			//加入
 			auth.authenticationProvider(provider);
 		}
 

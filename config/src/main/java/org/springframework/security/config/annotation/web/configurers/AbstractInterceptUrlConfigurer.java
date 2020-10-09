@@ -73,10 +73,12 @@ public abstract class AbstractInterceptUrlConfigurer<C extends AbstractIntercept
 
 	@Override
 	public void configure(H http) throws Exception {
+		//元数据
 		FilterInvocationSecurityMetadataSource metadataSource = createMetadataSource(http);
 		if (metadataSource == null) {
 			return;
 		}
+		//创建过滤器
 		FilterSecurityInterceptor securityInterceptor = createFilterSecurityInterceptor(http, metadataSource,
 				http.getSharedObject(AuthenticationManager.class));
 		if (this.filterSecurityInterceptorOncePerRequest != null) {

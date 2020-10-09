@@ -85,6 +85,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 
 	/**
 	 * The default key under which the security context will be stored in the session.
+	 * 'SPRING_SECURITY_CONTEXT'是安全上下文默认存储在Session中的键值
 	 */
 	public static final String SPRING_SECURITY_CONTEXT_KEY = "SPRING_SECURITY_CONTEXT";
 
@@ -110,6 +111,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 	 * If the session is null, the context object is null or the context object stored in
 	 * the session is not an instance of {@code SecurityContext}, a new context object
 	 * will be generated and returned.
+	 * 从当前request中取出安全上下文，如果session为空，则会返回一个新的安全上下文
 	 */
 	@Override
 	public SecurityContext loadContext(HttpRequestResponseHolder requestResponseHolder) {
@@ -117,7 +119,9 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 		HttpServletResponse response = requestResponseHolder.getResponse();
 		HttpSession httpSession = request.getSession(false);
 		SecurityContext context = readSecurityContextFromSession(httpSession);
+		//如果上下文为空
 		if (context == null) {
+			//创建
 			context = generateNewContext();
 			if (this.logger.isTraceEnabled()) {
 				this.logger.trace(LogMessage.format("Created %s", context));
@@ -139,6 +143,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 		// saveContext() might already be called by the response wrapper if something in
 		// the chain called sendError() or sendRedirect(). This ensures we only call it
 		// once per request.
+		// 如果链中名为sendError（）或sendRedirect（）的某个内容，则响应包装器可能已经调用了saveContext（）。 这样可以确保我们每个请求仅调用一次。
 		if (!responseWrapper.isContextSaved()) {
 			responseWrapper.saveContext(context);
 		}
@@ -162,6 +167,7 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 			return null;
 		}
 		// Session exists, so try to obtain a context from it.
+		// 如果 session 存在 ，从它获取 安全上下文
 		Object contextFromSession = httpSession.getAttribute(this.springSecurityContextKey);
 		if (contextFromSession == null) {
 			if (this.logger.isTraceEnabled()) {
@@ -198,6 +204,9 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 	 * called). Using this approach the context creation strategy is decided by the
 	 * {@link SecurityContextHolderStrategy} in use. The default implementations will
 	 * return a new <tt>SecurityContextImpl</tt>.
+	 *
+	 * 默认情况下，调用{@link SecurityContextHolder＃createEmptyContext（）}以获取新的上下文（调用此方法时，持有人中不应存在任何上下文）。
+	 * 使用这种方法，上下文创建策略由使用中的{@link SecurityContextHolderStrategy}决定。 默认实现将返回一个新的<tt> SecurityContextImpl </ tt>。
 	 * @return a new SecurityContext instance. Never null.
 	 */
 	protected SecurityContext generateNewContext() {
@@ -208,10 +217,15 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 	 * If set to true (the default), a session will be created (if required) to store the
 	 * security context if it is determined that its contents are different from the
 	 * default empty context value.
+	 *
+	 * 如果设置为true（默认值），则在确定其内容不同于默认的空上下文值时，将创建一个会话（如果需要）来存储安全上下文。
 	 * <p>
 	 * Note that setting this flag to false does not prevent this class from storing the
 	 * security context. If your application (or another filter) creates a session, then
 	 * the security context will still be stored for an authenticated user.
+	 *
+	 * 请注意，将此标志设置为false不会阻止此类存储安全上下文。
+	 * 如果您的应用程序（或其他过滤器）创建了会话，则仍将为经过身份验证的用户存储安全上下文。
 	 * @param allowSessionCreation
 	 */
 	public void setAllowSessionCreation(boolean allowSessionCreation) {
@@ -220,8 +234,11 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 
 	/**
 	 * Allows the use of session identifiers in URLs to be disabled. Off by default.
+	 * 允许禁用URL中的会话标识符。 默认关闭。
 	 * @param disableUrlRewriting set to <tt>true</tt> to disable URL encoding methods in
 	 * the response wrapper and prevent the use of <tt>jsessionid</tt> parameters.
+	 *
+	 * disableUrlRewriting设置为true可在响应包装器中禁用URL编码方法并防止使用jsessionid参数
 	 */
 	public void setDisableUrlRewriting(boolean disableUrlRewriting) {
 		this.disableUrlRewriting = disableUrlRewriting;
@@ -244,6 +261,8 @@ public class HttpSessionSecurityContextRepository implements SecurityContextRepo
 	/**
 	 * Sets the {@link AuthenticationTrustResolver} to be used. The default is
 	 * {@link AuthenticationTrustResolverImpl}.
+	 *
+	 * 设置要使用的{@link AuthenticationTrustResolver}。 默认值为{@link AuthenticationTrustResolverImpl}。
 	 * @param trustResolver the {@link AuthenticationTrustResolver} to use. Cannot be
 	 * null.
 	 */

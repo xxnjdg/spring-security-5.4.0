@@ -78,6 +78,9 @@ public @interface EnableGlobalMethodSecurity {
 	 * {@code false}. <strong>Applicable only if {@link #mode()} is set to
 	 * {@link AdviceMode#PROXY}</strong>.
 	 *
+	 * 指示是否要创建基于子类（CGLIB）的代理（{@code true}），而不是基于标准Java接口的代理（{@code false}）。
+	 * 默认值为{@code false}。 <strong>仅在{@link #mode（）}设置为{@link AdviceMode＃PROXY}时适用</ strong>。
+	 *
 	 * <p>
 	 * Note that setting this attribute to {@code true} will affect <em>all</em>
 	 * Spring-managed beans requiring proxying, not just those marked with the Security
@@ -87,6 +90,10 @@ public @interface EnableGlobalMethodSecurity {
 	 * proxy vs another, e.g. in tests.
 	 * @return true if CGILIB proxies should be created instead of interface based
 	 * proxies, else false
+	 *
+	 * 请注意，将此属性设置为{@code true}会影响所有需要代理的<em> all </ em> Spring管理的bean，而不仅仅是那些标记有Security批注的bean。
+	 * 例如，其他标有Spring的{@code @Transactional}批注的bean将同时升级为子类代理。 这种方法在实践中不会产生负面影响，
+	 * 除非一个人明确期望一种类型的代理与另一种类型的代理，例如 在测试中。 @return如果应创建CGILIB代理而不是基于接口的代理，则为true，否则为false
 	 */
 	boolean proxyTargetClass() default false;
 

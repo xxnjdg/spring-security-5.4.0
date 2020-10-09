@@ -27,6 +27,7 @@ import org.springframework.util.StringUtils;
 /**
  * Matches a request based on IP Address or subnet mask matching against the remote
  * address.
+ * 根据IP地址或子网掩码与远程地址进行匹配来匹配请求。
  * <p>
  * Both IPv6 and IPv4 addresses are supported, but a matcher which is configured with an
  * IPv4 address will never match a request which returns an IPv6 address, and vice-versa.

@@ -56,6 +56,7 @@ public class DefaultFilterInvocationSecurityMetadataSource implements FilterInvo
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	//映射
 	private final Map<RequestMatcher, Collection<ConfigAttribute>> requestMap;
 
 	/**

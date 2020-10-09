@@ -79,6 +79,7 @@ public final class CsrfFilter extends OncePerRequestFilter {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
+	//new LazyCsrfTokenRepository(new HttpSessionCsrfTokenRepository());
 	private final CsrfTokenRepository tokenRepository;
 
 	private RequestMatcher requireCsrfProtectionMatcher = DEFAULT_CSRF_MATCHER;
@@ -99,15 +100,20 @@ public final class CsrfFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		request.setAttribute(HttpServletResponse.class.getName(), response);
+		//从 session 获取 token
 		CsrfToken csrfToken = this.tokenRepository.loadToken(request);
 		boolean missingToken = (csrfToken == null);
+		//token 为空
 		if (missingToken) {
+			//生成token
 			csrfToken = this.tokenRepository.generateToken(request);
+			//把生成的 token 存入 session
 			this.tokenRepository.saveToken(csrfToken, request, response);
 		}
 		request.setAttribute(CsrfToken.class.getName(), csrfToken);
 		request.setAttribute(csrfToken.getParameterName(), csrfToken);
 		if (!this.requireCsrfProtectionMatcher.matches(request)) {
+			//如果是 "GET", "HEAD", "TRACE", "OPTIONS" 直接放行
 			if (this.logger.isTraceEnabled()) {
 				this.logger.trace("Did not protect against CSRF since request did not match "
 						+ this.requireCsrfProtectionMatcher);
@@ -115,18 +121,23 @@ public final class CsrfFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 			return;
 		}
+		//从请求头 name = X-CSRF-TOKEN 的值
 		String actualToken = request.getHeader(csrfToken.getHeaderName());
 		if (actualToken == null) {
+			//从请求体获取参数叫 _csrf 的值
 			actualToken = request.getParameter(csrfToken.getParameterName());
 		}
+		//actualToken 和 csrfToken.getToken() 不相等
 		if (!csrfToken.getToken().equals(actualToken)) {
 			this.logger.debug(
 					LogMessage.of(() -> "Invalid CSRF token found for " + UrlUtils.buildFullRequestUrl(request)));
 			AccessDeniedException exception = (!missingToken) ? new InvalidCsrfTokenException(csrfToken, actualToken)
 					: new MissingCsrfTokenException(actualToken);
+			//向用户返回错误码或错误页面
 			this.accessDeniedHandler.handle(request, response, exception);
 			return;
 		}
+		//成功，放行
 		filterChain.doFilter(request, response);
 	}
 

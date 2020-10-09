@@ -73,6 +73,7 @@ public class SecurityContextHolder {
 			strategyName = MODE_THREADLOCAL;
 		}
 		if (strategyName.equals(MODE_THREADLOCAL)) {
+			//默认策略
 			strategy = new ThreadLocalSecurityContextHolderStrategy();
 		}
 		else if (strategyName.equals(MODE_INHERITABLETHREADLOCAL)) {
@@ -150,6 +151,8 @@ public class SecurityContextHolder {
 
 	/**
 	 * Delegates the creation of a new, empty context to the configured strategy.
+	 *
+	 * 将创建新的空上下文委派给已配置的策略。
 	 */
 	public static SecurityContext createEmptyContext() {
 		return strategy.createEmptyContext();

@@ -61,6 +61,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 import org.springframework.util.Assert;
@@ -109,18 +110,41 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 
 	private AuthenticationConfiguration authenticationConfiguration;
 
+	/**
+	 * {@link AuthenticationManagerBuilder#build()} 获取 {@link AuthenticationManager}
+	 * 生成子级 {@link AuthenticationManager}
+	 */
 	private AuthenticationManagerBuilder authenticationBuilder;
 
+	/**
+	 * {@link AuthenticationManagerBuilder#build()} 获取 {@link AuthenticationManager}
+	 * 生成父级 {@link AuthenticationManager}
+	 */
 	private AuthenticationManagerBuilder localConfigureAuthenticationBldr;
 
 	private boolean disableLocalConfigureAuthenticationBldr;
 
 	private boolean authenticationManagerInitialized;
 
+	/**
+	 * 父级 {@link AuthenticationManager}
+	 * 该属性的值由 {@link WebSecurityConfigurerAdapter} 的子类是否重写
+	 * {@link WebSecurityConfigurerAdapter#configure(AuthenticationManagerBuilder)} 决定
+	 * 如果重写该方法，{@link #localConfigureAuthenticationBldr} 会传入该方法中，最后生成父级
+	 * 如果不重写默认使用 {@link AuthenticationConfiguration#getAuthenticationManager()} 获取
+	 */
 	private AuthenticationManager authenticationManager;
 
 	private AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
+	/**
+	 * 通过 {@link #getHttp()} 方法获取对象
+	 * 对象实现了 {@link org.springframework.security.config.annotation.web.HttpSecurityBuilder} 接口，
+	 * 调用{@link HttpSecurity#build()} 获取 {@link DefaultSecurityFilterChain} 对象，
+	 * 这个对象 {@link DefaultSecurityFilterChain#filters} 属性存储多个
+	 * 实现了 {@link javax.servlet.Filter } 接口的过滤器，
+	 * 即{@link DefaultSecurityFilterChain} 对象是 实现 {@link javax.servlet.Filter } 接口的过滤器 的容器
+	 */
 	private HttpSecurity http;
 
 	private boolean disableDefaults;
@@ -201,11 +225,16 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 		}
 		AuthenticationEventPublisher eventPublisher = getAuthenticationEventPublisher();
 		this.localConfigureAuthenticationBldr.authenticationEventPublisher(eventPublisher);
+		//获取父级 AuthenticationManager
 		AuthenticationManager authenticationManager = authenticationManager();
+		//设置父级
 		this.authenticationBuilder.parentAuthenticationManager(authenticationManager);
+		//创建了一些公共类
 		Map<Class<?>, Object> sharedObjects = createSharedObjects();
+		//创建 HttpSecurity
 		this.http = new HttpSecurity(this.objectPostProcessor, this.authenticationBuilder, sharedObjects);
 		if (!this.disableDefaults) {
+			//给 http 设置默认配置
 			applyDefaultConfiguration(this.http);
 			ClassLoader classLoader = this.context.getClassLoader();
 			List<AbstractHttpConfigurer> defaultHttpConfigurers = SpringFactoriesLoader
@@ -214,11 +243,13 @@ public abstract class WebSecurityConfigurerAdapter implements WebSecurityConfigu
 				this.http.apply(configurer);
 			}
 		}
+		//可重写，先看默认
 		configure(this.http);
 		return this.http;
 	}
 
 	private void applyDefaultConfiguration(HttpSecurity http) throws Exception {
+		//http 加入各种配置
 		http.csrf();
 		http.addFilter(new WebAsyncManagerIntegrationFilter());
 		http.exceptionHandling();

@@ -62,6 +62,7 @@ import org.springframework.web.accept.HeaderContentNegotiationStrategy;
 public abstract class AbstractAuthenticationFilterConfigurer<B extends HttpSecurityBuilder<B>, T extends AbstractAuthenticationFilterConfigurer<B, T, F>, F extends AbstractAuthenticationProcessingFilter>
 		extends AbstractHttpConfigurer<T, B> {
 
+	//过滤器
 	private F authFilter;
 
 	private AuthenticationDetailsSource<HttpServletRequest, ?> authenticationDetailsSource;
@@ -70,18 +71,24 @@ public abstract class AbstractAuthenticationFilterConfigurer<B extends HttpSecur
 
 	private AuthenticationSuccessHandler successHandler = this.defaultSuccessHandler;
 
+	//new LoginUrlAuthenticationEntryPoint(this.loginPage);
 	private LoginUrlAuthenticationEntryPoint authenticationEntryPoint;
 
+	//是否自定义登录页面，如果为true，就要自己提供登录页，否则，框架帮我们生成一个默认登录页
 	private boolean customLoginPage;
 
+	//登录页面 url
 	private String loginPage;
 
+	//登录页里的表单提交的url
 	private String loginProcessingUrl;
 
+	//失败处理
 	private AuthenticationFailureHandler failureHandler;
 
 	private boolean permitAll;
 
+	//失败跳转的 url
 	private String failureUrl;
 
 	/**
@@ -372,6 +379,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B extends HttpSecur
 	 * @throws Exception
 	 */
 	protected final void updateAuthenticationDefaults() {
+		//设置以下 3 个 url，设置过一次就不会在设置了
 		if (this.loginProcessingUrl == null) {
 			loginProcessingUrl(this.loginPage);
 		}
@@ -389,6 +397,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B extends HttpSecur
 	 */
 	protected final void updateAccessDefaults(B http) {
 		if (this.permitAll) {
+			//permitAll = true,以下三个 url ,不用认证就可以访问
 			PermitAllSupport.permitAll(http, this.loginPage, this.loginProcessingUrl, this.failureUrl);
 		}
 	}

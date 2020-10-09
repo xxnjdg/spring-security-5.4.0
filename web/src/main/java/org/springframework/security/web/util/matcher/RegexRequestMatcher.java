@@ -31,6 +31,8 @@ import org.springframework.util.StringUtils;
  * Uses a regular expression to decide whether a supplied the URL of a supplied
  * {@code HttpServletRequest}.
  *
+ * 使用正则表达式来确定是否提供的{@code HttpServletRequest}的URL。
+ *
  * Can also be configured to match a specific HTTP method.
  *
  * The match is performed against the {@code servletPath + pathInfo + queryString} of the

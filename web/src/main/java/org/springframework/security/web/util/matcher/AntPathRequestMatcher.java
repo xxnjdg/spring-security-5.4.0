@@ -32,12 +32,19 @@ import org.springframework.web.util.UrlPathHelper;
  * {@code servletPath + pathInfo}) of an {@code HttpServletRequest}. The query string of
  * the URL is ignored and matching is case-insensitive or case-sensitive depending on the
  * arguments passed into the constructor.
+ *
+ * 匹配器，它将预定义的ant-style模式与{@code HttpServletRequest}的URL（{@code servletPath + pathInfo}）进行比较。
+ * URL的查询字符串将被忽略，并且匹配是区分大小写的还是区分大小写的，具体取决于传递给构造函数的参数。
  * <p>
  * Using a pattern value of {@code /**} or {@code **} is treated as a universal match,
  * which will match any request. Patterns which end with {@code /**} (and have no other
  * wildcards) are optimized by using a substring match &mdash; a pattern of
  * {@code /aaa/**} will match {@code /aaa}, {@code /aaa/} and any sub-directories, such as
  * {@code /aaa/bbb/ccc}.
+ *
+ * 使用模式值{@code / **}或{@code **}被视为通用匹配，它将匹配任何请求。
+ * 通过使用子字符串匹配来优化以{@code / **}结尾（没有其他通配符）的模式
+ * {@code / aaa / **}的模式将匹配{@code / aaa}，{@code /aaa/} 以及任何子目录，例如{@code / aaa / bbb / ccc}。
  * </p>
  * <p>
  * For all other cases, Spring's {@link AntPathMatcher} is used to perform the match. See
@@ -100,6 +107,8 @@ public final class AntPathRequestMatcher implements RequestMatcher, RequestVaria
 	/**
 	 * Creates a matcher with the supplied pattern which will match the specified Http
 	 * method
+	 *
+	 * 使用提供的模式创建匹配器，该匹配器将匹配指定的Http方法
 	 * @param pattern the ant pattern to use for matching
 	 * @param httpMethod the HTTP method. The {@code matches} method will return false if
 	 * the incoming request doesn't have the same method.

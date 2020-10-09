@@ -143,7 +143,9 @@ public abstract class AbstractUserDetailsAuthenticationProvider
 			Assert.notNull(user, "retrieveUser returned null - a violation of the interface contract");
 		}
 		try {
+			//#2.前检查由DefaultPreAuthenticationChecks类实现（主要判断当前用户是否锁定，过期，冻结User接口）
 			this.preAuthenticationChecks.check(user);
+			//#3.子类实现
 			additionalAuthenticationChecks(user, (UsernamePasswordAuthenticationToken) authentication);
 		}
 		catch (AuthenticationException ex) {
@@ -157,6 +159,7 @@ public abstract class AbstractUserDetailsAuthenticationProvider
 			this.preAuthenticationChecks.check(user);
 			additionalAuthenticationChecks(user, (UsernamePasswordAuthenticationToken) authentication);
 		}
+		//#4.检测用户密码是否过期对应#2 的User接口
 		this.postAuthenticationChecks.check(user);
 		if (!cacheWasUsed) {
 			this.userCache.putUserInCache(user);
@@ -186,6 +189,8 @@ public abstract class AbstractUserDetailsAuthenticationProvider
 	 * @param authentication that was presented to the provider for validation
 	 * @param user that was loaded by the implementation
 	 * @return the successful authentication token
+	 *
+	 * 将已通过验证的用户信息封装成 UsernamePasswordAuthenticationToken 对象并返回；该对象封装了用户的身份信息，以及相应的权限信息
 	 */
 	protected Authentication createSuccessAuthentication(Object principal, Authentication authentication,
 			UserDetails user) {

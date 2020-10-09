@@ -65,12 +65,21 @@ public class AuthenticationConfiguration {
 
 	private AtomicBoolean buildingAuthenticationManager = new AtomicBoolean();
 
+	//ioc 容器
 	private ApplicationContext applicationContext;
 
+	/**
+	 * 通过 {@link #getAuthenticationManager()} 获取
+	 */
 	private AuthenticationManager authenticationManager;
 
+	//this.authenticationManager 初始化 flag
 	private boolean authenticationManagerInitialized;
 
+	//GlobalAuthenticationConfigurerAdapter 列表，刚开始有3个，分别是此类的以下方法生成的 bean
+	// enableGlobalAuthenticationAutowiredConfigurer
+	// initializeUserDetailsBeanManagerConfigurer
+	// initializeAuthenticationProviderBeanManagerConfigurer
 	private List<GlobalAuthenticationConfigurerAdapter> globalAuthConfigurers = Collections.emptyList();
 
 	private ObjectPostProcessor<Object> objectPostProcessor;
@@ -111,13 +120,19 @@ public class AuthenticationConfiguration {
 		if (this.authenticationManagerInitialized) {
 			return this.authenticationManager;
 		}
+		//上面 authenticationManagerBuilder() 方法生成的 DefaultPasswordEncoderAuthenticationManagerBuilder bean
 		AuthenticationManagerBuilder authBuilder = this.applicationContext.getBean(AuthenticationManagerBuilder.class);
 		if (this.buildingAuthenticationManager.getAndSet(true)) {
 			return new AuthenticationManagerDelegator(authBuilder);
 		}
 		for (GlobalAuthenticationConfigurerAdapter config : this.globalAuthConfigurers) {
+			//把 config 加入到 authBuilder
+			//EnableGlobalAuthenticationAutowiredConfigurer
+			// InitializeUserDetailsBeanManagerConfigurer
+			// InitializeAuthenticationProviderBeanManagerConfigurer
 			authBuilder.apply(config);
 		}
+		//生成 authenticationManager
 		this.authenticationManager = authBuilder.build();
 		if (this.authenticationManager == null) {
 			this.authenticationManager = getAuthenticationManagerBean();
@@ -198,6 +213,7 @@ public class AuthenticationConfiguration {
 		}
 	}
 
+	//不清楚有什么作用。。。
 	private static class EnableGlobalAuthenticationAutowiredConfigurer extends GlobalAuthenticationConfigurerAdapter {
 
 		private final ApplicationContext context;
@@ -210,6 +226,9 @@ public class AuthenticationConfiguration {
 
 		@Override
 		public void init(AuthenticationManagerBuilder auth) {
+			//spring boot 自动配置会帮我们声明 @EnableWebSecurity
+			//获取声明 @EnableGlobalAuthentication bean 信息封装成 map
+			// map {key = bean 名字 value = bean 实例对象}
 			Map<String, Object> beansWithAnnotation = this.context
 					.getBeansWithAnnotation(EnableGlobalAuthentication.class);
 			if (logger.isTraceEnabled()) {

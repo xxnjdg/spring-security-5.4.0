@@ -48,6 +48,9 @@ import org.springframework.util.StringUtils;
  * one {@link org.springframework.web.bind.annotation.RequestMapping} needs to be mapped
  * to {@link ConfigAttribute}'s for this {@link SecurityContextConfigurer} to have
  * meaning.
+ *
+ * 将基于SpEL表达式的基于URL的授权添加到应用程序。 至少需要将一个{@link org.springframework.web.bind.annotation.RequestMapping}映射到
+ * {@link ConfigAttribute}，此{@link SecurityContextConfigurer}才有意义。
  * <h2>Security Filters</h2>
  *
  * The following Filters are populated
@@ -94,6 +97,7 @@ public final class ExpressionUrlAuthorizationConfigurer<H extends HttpSecurityBu
 
 	private static final String rememberMe = "rememberMe";
 
+	//设置 {@link RequestMatcher} 以及他权限
 	private final ExpressionInterceptUrlRegistry REGISTRY;
 
 	private SecurityExpressionHandler<FilterInvocation> expressionHandler;
@@ -103,6 +107,7 @@ public final class ExpressionUrlAuthorizationConfigurer<H extends HttpSecurityBu
 	 * @see HttpSecurity#authorizeRequests()
 	 */
 	public ExpressionUrlAuthorizationConfigurer(ApplicationContext context) {
+		//创建
 		this.REGISTRY = new ExpressionInterceptUrlRegistry(context);
 	}
 
@@ -113,6 +118,8 @@ public final class ExpressionUrlAuthorizationConfigurer<H extends HttpSecurityBu
 	/**
 	 * Allows registering multiple {@link RequestMatcher} instances to a collection of
 	 * {@link ConfigAttribute} instances
+	 *
+	 * 注册 多个{@link RequestMatcher} 和 {@link ConfigAttribute} 集合的映射
 	 * @param requestMatchers the {@link RequestMatcher} instances to register to the
 	 * {@link ConfigAttribute} instances
 	 * @param configAttributes the {@link ConfigAttribute} to be mapped by the
@@ -144,6 +151,7 @@ public final class ExpressionUrlAuthorizationConfigurer<H extends HttpSecurityBu
 		return new ExpressionBasedFilterInvocationSecurityMetadataSource(requestMap, getExpressionHandler(http));
 	}
 
+	//获取 ExpressionHandler
 	private SecurityExpressionHandler<FilterInvocation> getExpressionHandler(H http) {
 		if (this.expressionHandler != null) {
 			return this.expressionHandler;
@@ -218,6 +226,7 @@ public final class ExpressionUrlAuthorizationConfigurer<H extends HttpSecurityBu
 			return mvcMatchers(null, patterns);
 		}
 
+		//重点代码
 		@Override
 		protected AuthorizedUrl chainRequestMatchersInternal(List<RequestMatcher> requestMatchers) {
 			return new AuthorizedUrl(requestMatchers);
@@ -425,6 +434,7 @@ public final class ExpressionUrlAuthorizationConfigurer<H extends HttpSecurityBu
 
 		/**
 		 * Allows specifying that URLs are secured by an arbitrary expression
+		 * 允许指定URL由任意表达式保护
 		 * @param attribute the expression to secure the URLs (i.e. "hasRole('ROLE_USER')
 		 * and hasRole('ROLE_SUPER')")
 		 * @return the {@link ExpressionUrlAuthorizationConfigurer} for further
@@ -434,6 +444,7 @@ public final class ExpressionUrlAuthorizationConfigurer<H extends HttpSecurityBu
 			if (this.not) {
 				attribute = "!" + attribute;
 			}
+			//注册他们之间的关系
 			interceptUrl(this.requestMatchers, SecurityConfig.createList(attribute));
 			return ExpressionUrlAuthorizationConfigurer.this.REGISTRY;
 		}

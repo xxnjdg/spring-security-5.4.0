@@ -61,6 +61,8 @@ public interface Authentication extends Principal, Serializable {
 	 * </p>
 	 * @return the authorities granted to the principal, or an empty collection if the
 	 * token has not been authenticated. Never null.
+	 *
+	 * //#1.权限结合，可使用AuthorityUtils.commaSeparatedStringToAuthorityList("admin,ROLE_ADMIN")返回字符串权限集合
 	 */
 	Collection<? extends GrantedAuthority> getAuthorities();
 
@@ -69,6 +71,8 @@ public interface Authentication extends Principal, Serializable {
 	 * but could be anything relevant to the <code>AuthenticationManager</code>. Callers
 	 * are expected to populate the credentials.
 	 * @return the credentials that prove the identity of the <code>Principal</code>
+	 *
+	 * //#2.用户名密码认证时可以理解为密码
 	 */
 	Object getCredentials();
 
@@ -77,6 +81,8 @@ public interface Authentication extends Principal, Serializable {
 	 * address, certificate serial number etc.
 	 * @return additional details about the authentication request, or <code>null</code>
 	 * if not used
+	 *
+	 * //#3.认证时包含的一些信息。
 	 */
 	Object getDetails();
 
@@ -91,6 +97,8 @@ public interface Authentication extends Principal, Serializable {
 	 * {@code UserDetails} object as the principal.
 	 * @return the <code>Principal</code> being authenticated or the authenticated
 	 * principal after authentication.
+	 *
+	 * //#4.用户名密码认证时可理解时用户名
 	 */
 	Object getPrincipal();
 
@@ -111,6 +119,8 @@ public interface Authentication extends Principal, Serializable {
 	 * @return true if the token has been authenticated and the
 	 * <code>AbstractSecurityInterceptor</code> does not need to present the token to the
 	 * <code>AuthenticationManager</code> again for re-authentication.
+	 *
+	 * #5.是否被认证，认证为true
 	 */
 	boolean isAuthenticated();
 
@@ -129,6 +139,8 @@ public interface Authentication extends Principal, Serializable {
 	 * trusted (by passing <code>true</code> as the argument) is rejected due to the
 	 * implementation being immutable or implementing its own alternative approach to
 	 * {@link #isAuthenticated()}
+	 *
+	 * 6.设置是否能被认证
 	 */
 	void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException;
 

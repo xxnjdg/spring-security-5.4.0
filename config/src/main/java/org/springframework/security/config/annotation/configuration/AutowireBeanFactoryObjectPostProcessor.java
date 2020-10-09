@@ -62,12 +62,14 @@ final class AutowireBeanFactoryObjectPostProcessor
 		}
 		T result = null;
 		try {
+			//初始化 bean 可参考 AbstractAutowireCapableBeanFactory.initializeBean
 			result = (T) this.autowireBeanFactory.initializeBean(object, object.toString());
 		}
 		catch (RuntimeException ex) {
 			Class<?> type = object.getClass();
 			throw new RuntimeException("Could not postProcess " + object + " of type " + type, ex);
 		}
+		//bean 依赖注入 可参考 AbstractAutowireCapableBeanFactory.autowireBean
 		this.autowireBeanFactory.autowireBean(object);
 		if (result instanceof DisposableBean) {
 			this.disposableBeans.add((DisposableBean) result);

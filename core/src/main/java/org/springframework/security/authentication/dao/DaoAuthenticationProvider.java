@@ -45,6 +45,8 @@ public class DaoAuthenticationProvider extends AbstractUserDetailsAuthentication
 	 */
 	private static final String USER_NOT_FOUND_PASSWORD = "userNotFoundPassword";
 
+	//#1.可直接返回BCryptPasswordEncoder，也可以自己实现该接口使用自己的加密算法核心方法
+	// String encode(CharSequence rawPassword);和boolean matches(CharSequence rawPassword, String encodedPassword);
 	private PasswordEncoder passwordEncoder;
 
 	/**

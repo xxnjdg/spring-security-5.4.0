@@ -86,7 +86,9 @@ public class AnonymousAuthenticationFilter extends GenericFilterBean implements 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
 			throws IOException, ServletException {
+		//前面没认证，以匿名方式访问
 		if (SecurityContextHolder.getContext().getAuthentication() == null) {
+			//加入匿名token
 			SecurityContextHolder.getContext().setAuthentication(createAuthentication((HttpServletRequest) req));
 			if (this.logger.isTraceEnabled()) {
 				this.logger.trace(LogMessage.of(() -> "Set SecurityContextHolder to "

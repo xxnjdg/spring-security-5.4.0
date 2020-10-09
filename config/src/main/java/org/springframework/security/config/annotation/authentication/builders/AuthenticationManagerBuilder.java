@@ -225,6 +225,7 @@ public class AuthenticationManagerBuilder
 			this.logger.debug("No authenticationProviders and no parentAuthenticationManager defined. Returning null.");
 			return null;
 		}
+		//创建 ProviderManager
 		ProviderManager providerManager = new ProviderManager(this.authenticationProviders,
 				this.parentAuthenticationManager);
 		if (this.eraseCredentials != null) {

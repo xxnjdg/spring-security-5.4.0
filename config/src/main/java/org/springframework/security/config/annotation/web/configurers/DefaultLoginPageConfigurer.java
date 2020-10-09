@@ -94,6 +94,10 @@ public final class DefaultLoginPageConfigurer<H extends HttpSecurityBuilder<H>>
 		if (exceptionConf != null) {
 			authenticationEntryPoint = exceptionConf.getAuthenticationEntryPoint();
 		}
+		/**
+		 * 默认会自动生成登录页和退出页，如果用户调用了 {@link FormLoginConfigurer#loginPage(String)}
+		 * 自定义登录页，那么下面这些逻辑将不会有效
+		 */
 		if (this.loginPageGeneratingFilter.isEnabled() && authenticationEntryPoint == null) {
 			this.loginPageGeneratingFilter = postProcess(this.loginPageGeneratingFilter);
 			http.addFilter(this.loginPageGeneratingFilter);

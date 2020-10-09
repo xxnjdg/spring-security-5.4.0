@@ -39,10 +39,12 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractAuthenticationToken implements Authentication, CredentialsContainer {
 
+	//权限
 	private final Collection<GrantedAuthority> authorities;
 
 	private Object details;
 
+	//是否检验通过 flag,true为通过检验
 	private boolean authenticated = false;
 
 	/**
